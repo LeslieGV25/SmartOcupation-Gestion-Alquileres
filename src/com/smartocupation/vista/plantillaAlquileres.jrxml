@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    
+    aquí definimos el tamaño del papel y los márgenes.
+-->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" 
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" 
+              name="InformeAlquileres" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+    
+    <!-- 
+        1 aqui es donde Jasper espera recibir datos de Java.
+        Los nombres "name" deben ser IDENTICOS a los atributos de la clase 'Alquiler'.
+    -->
+    <field name="numExpediente" class="java.lang.String"/>
+    <field name="fechaEntrada" class="java.util.Date"/>
+    <field name="estadoCobro" class="java.lang.String"/>
+    
+    <!-- Jasper puede entrar dentro de objetos (cliente.nombre) -->
+
+    <field name="cliente.nombreCompleto" class="java.lang.String"/>
+    <field name="vivienda.ubicacion" class="java.lang.String"/>
+    <field name="vivienda.precioAlquilerMes" class="java.lang.Double"/>
+
+    <!-- 
+        2 titulo
+        
+    -->
+    <title>
+        <band height="80">
+            <!-- conn un rectángulo gris de fondo  -->
+            <rectangle>
+                <reportElement x="0" y="0" width="555" height="70" backcolor="#C8A2C8"/>
+            </rectangle>
+            <!--texto grande del título -->
+            <staticText>
+                <reportElement x="20" y="20" width="300" height="30" forecolor="#FFFFFF"/>
+                <textElement>
+                    <font size="22" isBold="true"/>
+                </textElement>
+
+                <text><![CDATA[SmartOcupation Report]]></text>
+            </staticText>
+
+            <!--subtítulo alineado a la derecha -->
+            <staticText>
+                <reportElement x="350" y="25" width="180" height="20" forecolor="#FFFFFF" />
+                <textElement textAlignment="Right">
+                    <font size="12"/>
+                </textElement>
+                <text><![CDATA[Informe de Alquileres]]></text>
+            </staticText>
+        </band>
+    </title>
+
+    <!-- 
+        3 ENCABEZADO DE TABLA 
+        Los nombres de las columnas (Expediente, Cliente, etc.)
+    -->
+    <columnHeader>
+        <band height="30">
+            <!-- titulo: expediente -->
+            <staticText>
+                <reportElement x="0" y="5" width="100" height="20"/>
+                <textElement><font isBold="true"/></textElement>
+                <text><![CDATA[Expediente]]></text>
+            </staticText>
+            <!-- titulo: Cliente -->
+            <staticText>
+                <reportElement x="100" y="5" width="150" height="20"/>
+                <textElement><font isBold="true"/></textElement>
+                <text><![CDATA[Cliente]]></text>
+            </staticText>
+            <!--titulo: Vivienda -->
+            <staticText>
+                <reportElement x="250" y="5" width="150" height="20"/>
+                <textElement><font isBold="true"/></textElement>
+                <text><![CDATA[Vivienda]]></text>
+            </staticText>
+            <!--titulo: Fecha -->
+            <staticText>
+                <reportElement x="400" y="5" width="80" height="20"/>
+                <textElement><font isBold="true"/></textElement>
+                <text><![CDATA[Fecha]]></text>
+            </staticText>
+            <!--  titulo: Precio -->
+             <staticText>
+                <reportElement x="480" y="5" width="75" height="20"/>
+                <textElement textAlignment="Right"><font isBold="true"/></textElement>
+                <text><![CDATA[Precio]]></text>
+            </staticText>
+            <line>
+                <reportElement x="0" y="25" width="555" height="1"/>
+            </line>
+        </band>
+    </columnHeader>
+
+    <!-- 
+        4. esta sección se repite sola por cada alquiler que haya en la lista, un detalle muy importante
+    -->
+    <detail>
+        <band height="25">
+
+            <!-- Imprimimos el Expediente -->
+            <textField>
+                <reportElement x="0" y="0" width="100" height="20"/>
+                <textFieldExpression><![CDATA[$F{numExpediente}]]></textFieldExpression>
+            </textField>
+
+            <!--imprimimos el Nombre  -->
+            <textField>
+                <reportElement x="100" y="0" width="150" height="20"/>
+                <textFieldExpression><![CDATA[$F{cliente.nombreCompleto}]]></textFieldExpression>
+            </textField>
+
+            <!-- imprimimos la ubicación -->
+            <textField>
+                <reportElement x="250" y="0" width="150" height="20"/>
+                <textFieldExpression><![CDATA[$F{vivienda.ubicacion}]]></textFieldExpression>
+            </textField>
+
+            <!-- imprimimos la fecha (con formato día/mes/año) -->
+            <textField pattern="dd/MM/yyyy">
+                <reportElement x="400" y="0" width="80" height="20"/>
+                <textFieldExpression><![CDATA[$F{fechaEntrada}]]></textFieldExpression>
+            </textField>
+
+            <!-- imprimimos el Precio con el simbolo del euro -->
+             <textField pattern="#,##0.00 €">
+                <reportElement x="480" y="0" width="75" height="20"/>
+                <textElement textAlignment="Right"/>
+                <textFieldExpression><![CDATA[$F{vivienda.precioAlquilerMes}]]></textFieldExpression>
+            </textField>
+
+        </band>
+    </detail>
+    
+</jasperReport>
