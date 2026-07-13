@@ -3,28 +3,57 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.smartocupation.modelo;
+
 //importamos la clase date para manejar la fecha de entrada 
 import java.util.Date;
+
 /**
- *POJO/ representa un alquiler 
+ * POJO/ representa un alquiler
  * esta es la clase principal que compone las otras clases
  * la clase alquiler tiene sus propios datos, tiene un CLIENTE Y una VIVIENDA
+ * 
  * @author Usuario
  */
 public class Alquiler {
-    //atributos de la tabla alquileres 
+    public enum TipoAlquiler {
+        LARGA_DURACION,
+        TURISTICO
+    }
+
+    // atributos de la tabla alquileres
     private int idAlquiler;
     private String numExpediente;
     private Date fechaEntrada; // Usamos java.util.Date
     private int tiempoEstimadoMeses;
     private String estadoCobro;
-    
-    //para un mejor manejo de datos en la inrterfaz voy a guardar 
-    //los objetos enteros , en vez de solo los IDS
+    private TipoAlquiler tipoAlquiler;
+    private Integer cantidadNoches;
+    private Double tarifaLimpieza;
+
+    public Alquiler() {
+    }
+
+    public Alquiler(int idAlquiler, String numExpediente, Date fechaEntrada, int tiempoEstimadoMeses,
+            String estadoCobro, TipoAlquiler tipoAlquiler, Integer cantidadNoches, Double tarifaLimpieza,
+            Cliente cliente, Vivienda vivienda) {
+        this.idAlquiler = idAlquiler;
+        this.numExpediente = numExpediente;
+        this.fechaEntrada = fechaEntrada;
+        this.tiempoEstimadoMeses = tiempoEstimadoMeses;
+        this.estadoCobro = estadoCobro;
+        this.tipoAlquiler = tipoAlquiler;
+        this.cantidadNoches = cantidadNoches;
+        this.tarifaLimpieza = tarifaLimpieza;
+        this.cliente = cliente;
+        this.vivienda = vivienda;
+    }
+
+    // para un mejor manejo de datos en la inrterfaz voy a guardar
+    // los objetos enteros , en vez de solo los IDS
     private Cliente cliente;
     private Vivienda vivienda;
-    
-    //getters y setters
+
+    // getters y setters
 
     public int getIdAlquiler() {
         return idAlquiler;
@@ -81,14 +110,38 @@ public class Alquiler {
     public void setVivienda(Vivienda vivienda) {
         this.vivienda = vivienda;
     }
-    
-     @Override
+
+    public TipoAlquiler getTipoAlquiler() {
+        return tipoAlquiler;
+    }
+
+    public void setTipoAlquiler(TipoAlquiler tipoAlquiler) {
+        this.tipoAlquiler = tipoAlquiler;
+    }
+
+    public Integer getCantidadNoches() {
+        return cantidadNoches;
+    }
+
+    public void setCantidadNoches(Integer cantidadNoches) {
+        this.cantidadNoches = cantidadNoches;
+    }
+
+    public Double getTarifaLimpieza() {
+        return tarifaLimpieza;
+    }
+
+    public void setTarifaLimpieza(Double tarifaLimpieza) {
+        this.tarifaLimpieza = tarifaLimpieza;
+    }
+
+    @Override
     public String toString() {
         // Un toString más completo para depurar
         String nombreCliente = (cliente != null) ? cliente.getNombreCompleto() : "N/A";
         String ubicacionVivienda = (vivienda != null) ? vivienda.getUbicacion() : "N/A";
-        
-        return "Alquiler{" + "exp=" + numExpediente + ", fecha=" + fechaEntrada + 
-               ", cliente=" + nombreCliente + ", vivienda=" + ubicacionVivienda + '}';
+
+        return "Alquiler{" + "exp=" + numExpediente + ", fecha=" + fechaEntrada +
+                ", cliente=" + nombreCliente + ", vivienda=" + ubicacionVivienda + '}';
     }
 }

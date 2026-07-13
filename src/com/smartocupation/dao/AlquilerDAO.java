@@ -20,74 +20,80 @@ import java.util.ArrayList;
 import java.util.Date; // ojo: el que usa el JCalendar
 import java.util.List;
 import javax.swing.JOptionPane;
+
 /**
- *DAO para la entidad alquiler 
- * esta clase contiene toda la logica para el acceso a los datos 
- * relacionada con los alquileres 
+ * DAO para la entidad alquiler
+ * esta clase contiene toda la logica para el acceso a los datos
+ * relacionada con los alquileres
+ * 
  * @author Usuario
  */
 public class AlquilerDAO {
     private Connection conexion;
+
     /**
      * construcctor del DAO
      */
-    public AlquilerDAO(){
-    this.conexion = ConexionDB.getConnection();
+    public AlquilerDAO() {
+        this.conexion = ConexionDB.getConnection();
     }
-    
+
     /**
      * metodo principal
-     * busca alquileres en la bbdd que esten dentro de un rango de fechas 
+     * busca alquileres en la bbdd que esten dentro de un rango de fechas
+     * 
      * @param fechaInicio fecha de inicio del rango
-     * @param fechaFin fecha fin del rango
+     * @param fechaFin    fecha fin del rango
      * @return una lista de objetos Alquiler
      */
-    public List<Alquiler> buscarAlquileresPorFechas(Date fechaInicio, Date fechaFin){
-    
-        //1. preparamos la lista para guardar los resultados
+    public List<Alquiler> buscarAlquileresPorFechas(Date fechaInicio, Date fechaFin) {
+
+        // 1. preparamos la lista para guardar los resultados
         List<Alquiler> alquileresEncontrados = new ArrayList<>();
-        
-        //2. esta es la consulta SQL . es la parte mas importante 
-        //usamos join para unir las 3 tablas y traer todos los datos de una
+
+        // 2. esta es la consulta SQL . es la parte mas importante
+        // usamos join para unir las 3 tablas y traer todos los datos de una
         // 'a' es alias de Alquileres
-        //'c' de Clientes
-        //'v' de Viviendas
-        String sql = "SELECT " + 
-         "a.id_alquiler, a.num_expediente, a.fecha_entrada, a.tiempo_estimado_meses, a.estado_cobro, " +
-                     "c.id_cliente, c.dni, c.nombre_completo, c.email, c.telefono, c.datos_facturacion, " +
-                     "v.id_vivienda, v.ref_catastral, v.ubicacion, v.metros_cuadrados, v.habitaciones, v.banos, v.precio_alquiler_mes " +
-                     "FROM Alquileres a " +
-                     "JOIN Clientes c ON a.id_cliente = c.id_cliente " +
-                     "JOIN Viviendas v ON a.id_vivienda = v.id_vivienda " +
-                     "WHERE a.fecha_entrada >= ? AND a.fecha_entrada <= ? " +
-                     "ORDER BY a.fecha_entrada DESC"; // ORDENA POR FECHAS
-        
-        //3  usamos try-with-resources para qyue el PreparedStatement se cierre solo
-        try(PreparedStatement pstmt = this.conexion.prepareStatement(sql)){
-        
-            //4. asignamos valores a los "?" 
-            //esto en vital para la seguridad porue evita la inyeccion sql
-            //y para que las fechas funcionen bien
-            
-            //el ? en la posicion 1 es la fechaInicio
-            //CONVERTIMOS DE JAVA.UTIL.DATE A JAVA.SQL.DATE
+        // 'c' de Clientes
+        // 'v' de Viviendas
+        String sql = "SELECT " +
+                "a.id_alquiler, a.num_expediente, a.fecha_entrada, a.tiempo_estimado_meses, a.estado_cobro, " +
+                "a.tipo_alquiler, a.cantidad_noches, a.tarifa_limpieza, " +
+                "c.id_cliente, c.dni, c.nombre_completo, c.email, c.telefono, c.datos_facturacion, " +
+                "v.id_vivienda, v.ref_catastral, v.ubicacion, v.metros_cuadrados, v.habitaciones, v.banos, v.precio_alquiler_mes "
+                +
+                "FROM Alquileres a " +
+                "JOIN Clientes c ON a.id_cliente = c.id_cliente " +
+                "JOIN Viviendas v ON a.id_vivienda = v.id_vivienda " +
+                "WHERE a.fecha_entrada >= ? AND a.fecha_entrada <= ? " +
+                "ORDER BY a.fecha_entrada DESC"; // ORDENA POR FECHAS
+
+        // 3 usamos try-with-resources para qyue el PreparedStatement se cierre solo
+        try (PreparedStatement pstmt = this.conexion.prepareStatement(sql)) {
+
+            // 4. asignamos valores a los "?"
+            // esto en vital para la seguridad porue evita la inyeccion sql
+            // y para que las fechas funcionen bien
+
+            // el ? en la posicion 1 es la fechaInicio
+            // CONVERTIMOS DE JAVA.UTIL.DATE A JAVA.SQL.DATE
             pstmt.setDate(1, new java.sql.Date(fechaInicio.getTime()));
             pstmt.setDate(2, new java.sql.Date(fechaFin.getTime()));
-            
-              System.out.println("Ejecutando SQL: " + pstmt);
-              
-            //5. ejecutar la consulta y obtener los resultadosç
+
+            System.out.println("Ejecutando SQL: " + pstmt);
+
+            // 5. ejecutar la consulta y obtener los resultadosç
             ResultSet rs = pstmt.executeQuery();
-            
-            //6. recorrer los resultados 
-            while(rs.next()){
-            
-                //creamos los tres objetos molde vacios
+
+            // 6. recorrer los resultados
+            while (rs.next()) {
+
+                // creamos los tres objetos molde vacios
                 Alquiler alquiler = new Alquiler();
                 Cliente cliente = new Cliente();
                 Vivienda vivienda = new Vivienda();
-                
-                //rellenamos el objeto vivienda
+
+                // rellenamos el objeto vivienda
                 vivienda.setIdVivienda(rs.getInt("id_vivienda"));
                 vivienda.setRefCatastral(rs.getString("ref_catastral"));
                 vivienda.setUbicacion(rs.getString("ubicacion"));
@@ -95,7 +101,7 @@ public class AlquilerDAO {
                 vivienda.setHabitaciones(rs.getInt("habitaciones"));
                 vivienda.setBanos(rs.getInt("banos"));
                 vivienda.setPrecioAlquilerMes(rs.getDouble("precio_alquiler_mes"));
-                
+
                 // rellenamos el objeto Cliente
                 cliente.setIdCliente(rs.getInt("id_cliente"));
                 cliente.setDni(rs.getString("dni"));
@@ -110,45 +116,45 @@ public class AlquilerDAO {
                 alquiler.setFechaEntrada(rs.getDate("fecha_entrada"));
                 alquiler.setTiempoEstimadoMeses(rs.getInt("tiempo_estimado_meses"));
                 alquiler.setEstadoCobro(rs.getString("estado_cobro"));
-                
-                //7 aqui hacemos la magia 
-                //metemos el objeto cliente y Vivienda dentro del alquiler
+
+                String tipoAlquilerStr = rs.getString("tipo_alquiler");
+                if (tipoAlquilerStr != null) {
+                    tipoAlquilerStr = tipoAlquilerStr.trim().replace(' ', '_').toUpperCase();
+                    try {
+                        alquiler.setTipoAlquiler(Alquiler.TipoAlquiler.valueOf(tipoAlquilerStr));
+                    } catch (IllegalArgumentException e) {
+                        alquiler.setTipoAlquiler(null);
+                    }
+                }
+
+                int cantidadNoches = rs.getInt("cantidad_noches");
+                if (!rs.wasNull()) {
+                    alquiler.setCantidadNoches(cantidadNoches);
+                }
+
+                double tarifaLimpieza = rs.getDouble("tarifa_limpieza");
+                if (!rs.wasNull()) {
+                    alquiler.setTarifaLimpieza(tarifaLimpieza);
+                }
+
+                // 7 aqui hacemos la magia
+                // metemos el objeto cliente y Vivienda dentro del alquiler
                 alquiler.setCliente(cliente);
                 alquiler.setVivienda(vivienda);
-                
-                //8 añadimos el alquiler completo a nuestra lista
+
+                // 8 añadimos el alquiler completo a nuestra lista
                 alquileresEncontrados.add(alquiler);
             }
-            System.out.println("Busqueda finalizada. Encontrados: "+ alquileresEncontrados.size());
-        } catch(SQLException e){
-            System.out.println("Error al buscar alquileres por fecha: "+ e.getMessage());
+            System.out.println("Busqueda finalizada. Encontrados: " + alquileresEncontrados.size());
+        } catch (SQLException e) {
+            System.out.println("Error al buscar alquileres por fecha: " + e.getMessage());
             e.printStackTrace();
-            //informamos al usuario con un dialogo
-            JOptionPane.showMessageDialog(null,"Error al consultar la base de datos: "+ e.getMessage(),
-                    "Error de Busqueda",JOptionPane.ERROR_MESSAGE);
+            // informamos al usuario con un dialogo
+            JOptionPane.showMessageDialog(null, "Error al consultar la base de datos: " + e.getMessage(),
+                    "Error de Busqueda", JOptionPane.ERROR_MESSAGE);
         }
-        //9 devolvemos la lista (vacia o llena)
+        // 9 devolvemos la lista (vacia o llena)
         return alquileresEncontrados;
-    
+
     }
 }
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
